@@ -53,6 +53,7 @@ class TableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - 테이블 셀 안 내용관련 레이아웃
     private func configureUI(){
         contentView.backgroundColor = .white
         [ nameLabel, numberLabel, profileImage].forEach{
@@ -79,6 +80,7 @@ class TableViewCell: UITableViewCell {
         }
     }
     
+    // MARK: - 테이블 셀 -> 테이블에 연결
     public func configureCell(user: User) {
         nameLabel.text = "\(user.name)"
         numberLabel.text = "\(user.phoneNumber)"

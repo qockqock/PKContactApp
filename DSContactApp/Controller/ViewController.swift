@@ -9,42 +9,25 @@ import UIKit
 import SnapKit
 
 class ViewController: UIViewController {
-
+    
     private var dataSource = [User]()
-    
-    // 타이틀 이름 관련
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "친구 목록"
-        label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 30)
-        
-        return label
-    }()
-
-    // 추가 버튼
-    private let addButton: UIButton = {
-       let button = UIButton()
-        button.titleLabel?.font = .systemFont(ofSize: 20)
-        button.setTitleColor(.systemCyan, for: .normal)
-        button.setTitle("추가", for: .normal)
-        return button
-    }()
-    
-    // 메인 테이블 뷰
-    private lazy var mainTableView: UITableView = {
-       let tableView = UITableView()
-        tableView.backgroundColor = .white
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        return tableView
-    }()
+    private let mainView = MainView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
-        mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
+        mainViewconfigureUI()
+    }
+    
+// MARK: - 메인 뷰 관련
+    private func mainViewconfigureUI() {
+        view.addSubview(mainView)
+        // mainView의 레이아웃 설정
+        mainView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        mainView.mainTableView.delegate = self
+        mainView.mainTableView.dataSource = self
+        mainView.mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
         
         dataSource = [
             User(name: "name", phoneNumber: "010-0000-0000"),
@@ -55,38 +38,34 @@ class ViewController: UIViewController {
             User(name: "name", phoneNumber: "010-0000-0000"),
             User(name: "name", phoneNumber: "010-0000-0000"),
         ]
+        
+        configureNavigationBar()
     }
     
-    private func configureUI() {
-        view.backgroundColor = .white
+// MARK: - 네비게이션 관련
+    private func configureNavigationBar() {
+        // 네비게이션 타이틀 설정
+        self.title = "친구 목록"
         
-        // 에드섭뷰 해주기
-        [addButton, mainTableView, titleLabel].forEach{
-            view.addSubview($0)
-        }
+        // 네비게이션 바 타이틀 텍스트 속성 관련 도구
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20, weight: .bold)
+        ]
         
-        // 타이틀 잡아주기
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(80)
-        }
-        
-        // 테이블 뷰 잡아주기
-        mainTableView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(titleLabel.snp.bottom).offset(30)
-            $0.leading.trailing.bottom.equalToSuperview()
-        }
-        
-//         버튼 잡아주기
-        addButton.snp.makeConstraints {
-            $0.leading.equalTo(titleLabel.snp.trailing).offset(80)
-            $0.top.equalTo(80)
-        }
+        // 우측 버튼 설정
+        let additionButton = UIBarButtonItem(title: "추가", style: .plain, target: self, action: #selector(buttonTapped))
+        self.navigationItem.rightBarButtonItem = additionButton
+    }
+    
+// MARK: - 버튼 눌렸을 때
+    @objc
+    private func buttonTapped() {
+        // 적용 버튼 클릭시 동작
+        self.navigationController?.pushViewController(AdditionController(), animated: true)
     }
 }
 
-
+// MARK: - 뷰컨 관련 extension
 extension ViewController: UITableViewDelegate {
     // 테이블 뷰 셀 높이 지정
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -110,7 +89,4 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
-//#Preview{
-//    let vc = ViewController()
-//    return vc
-//}
+
