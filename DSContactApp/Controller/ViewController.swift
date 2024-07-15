@@ -110,7 +110,7 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
-#Preview{
-    let vc = ViewController()
-    return vc
-}
+//#Preview{
+//    let vc = ViewController()
+//    return vc
+//}
