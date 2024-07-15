@@ -9,42 +9,28 @@ import UIKit
 import SnapKit
 
 class ViewController: UIViewController {
-
+    
     private var dataSource = [User]()
+    private let mainView = MainView()
     
-    // 타이틀 이름 관련
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "친구 목록"
-        label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 30)
-        
-        return label
-    }()
-
-    // 추가 버튼
-    private let addButton: UIButton = {
-       let button = UIButton()
-        button.titleLabel?.font = .systemFont(ofSize: 20)
-        button.setTitleColor(.systemCyan, for: .normal)
-        button.setTitle("추가", for: .normal)
-        return button
-    }()
-    
-    // 메인 테이블 뷰
-    private lazy var mainTableView: UITableView = {
-       let tableView = UITableView()
-        tableView.backgroundColor = .white
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        return tableView
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
-        mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
+        mainViewconfigureUI()
+    }
+    
+    // 메인 뷰 관련
+    private func mainViewconfigureUI() {
+        view.addSubview(mainView)
+        
+        // mainView의 레이아웃 설정
+        mainView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        mainView.mainTableView.delegate = self
+        mainView.mainTableView.dataSource = self
+        mainView.mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
         
         dataSource = [
             User(name: "name", phoneNumber: "010-0000-0000"),
@@ -56,36 +42,7 @@ class ViewController: UIViewController {
             User(name: "name", phoneNumber: "010-0000-0000"),
         ]
     }
-    
-    private func configureUI() {
-        view.backgroundColor = .white
-        
-        // 에드섭뷰 해주기
-        [addButton, mainTableView, titleLabel].forEach{
-            view.addSubview($0)
-        }
-        
-        // 타이틀 잡아주기
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(80)
-        }
-        
-        // 테이블 뷰 잡아주기
-        mainTableView.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.top.equalTo(titleLabel.snp.bottom).offset(30)
-            $0.leading.trailing.bottom.equalToSuperview()
-        }
-        
-//         버튼 잡아주기
-        addButton.snp.makeConstraints {
-            $0.leading.equalTo(titleLabel.snp.trailing).offset(80)
-            $0.top.equalTo(80)
-        }
-    }
 }
-
 
 extension ViewController: UITableViewDelegate {
     // 테이블 뷰 셀 높이 지정
