@@ -10,8 +10,13 @@ import SnapKit
 
 class ViewController: UIViewController {
     
-    private var dataSource: [User] = []
     private let mainView = MainView()
+    private var dataSource = [User]() {
+        didSet {
+            dataSource.sort { $0.name < $1.name }
+            mainView.mainTableView.reloadData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,7 +121,6 @@ extension ViewController: AdditionControllerDelegate {
     func didAddContact(_ contact: User) {
         dataSource.append(contact)
         saveUserDefaultsData()
-        mainView.mainTableView.reloadData()
     }
 }
 
