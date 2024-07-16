@@ -8,9 +8,17 @@
 import UIKit
 import SnapKit
 
-class AdditionController: UIViewController {
+protocol AdditionControllerDelegate: AnyObject {
+    func didAddContact(_ contact: User)
+}
 
+class AdditionController: UIViewController {
+    
+    weak var delegate: AdditionControllerDelegate?
     private let additionView = AdditionView()
+    
+    // 이미지 데이터 관련
+    private var modelImageData: Data?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +37,7 @@ class AdditionController: UIViewController {
         additionView.randomButton.addTarget(self, action: #selector(randomButtonTapped), for: .touchUpInside)
     }
     
-// MARK: - 서버 데이터 불러오는 메서드
+    // MARK: - 서버 데이터 불러오는 메서드
     private func fetchData<T: Decodable>(url: URL, completion: @escaping (T?) -> Void) {
         let session = URLSession(configuration: .default)
         session.dataTask(with: URLRequest(url: url)) { data, response, error in
@@ -53,7 +61,7 @@ class AdditionController: UIViewController {
         }.resume()
     }
     
-// MARK: - 서버에서 포켓몬 데이터를 불러오는 메서드
+    // MARK: - 서버에서 포켓몬 데이터를 불러오는 메서드
     private func pokemonInfoData() {
         let urlComponents = URLComponents(string: "https://pokeapi.co/api/v2/pokemon/\(Int.random(in: 1...1000))")
         
@@ -73,13 +81,17 @@ class AdditionController: UIViewController {
                     DispatchQueue.main.async {
                         // UI 업데이트는 메인 스레드에서 수행 해야겠지?
                         self.additionView.additionImageView.image = image
+                        // 이미지 데이터를 User에 저장
+                        self.modelImageData = imageData
                     }
+                } else {
+                    print("이미지 로드 실패")
                 }
             }
         }
     }
     
-// MARK: - 네비게이션 바 관련
+    // MARK: - 네비게이션 바 관련
     private func configureNavigationBar() {
         // 네비게이션 타이틀 설정
         self.title = "연락처 추가"
@@ -89,13 +101,21 @@ class AdditionController: UIViewController {
         self.navigationItem.rightBarButtonItem = additionButton
     }
     
-// MARK: - 추가버튼 눌렸을 때 동작
+    // MARK: - 추가버튼 눌렸을 때 동작
     @objc private func addtionButtonTapped() {
-        // 적용 버튼 클릭시 동작
-        print("안농")
+        // 이름과 전화번호 저장
+        let name = additionView.nameTextView.text ?? ""
+        let phoneNumber = additionView.phoneNumberTextView.text ?? ""
+        
+        // 새 연락처 인스턴스 생성
+        let newContact = User(name: name, phoneNumber: phoneNumber, profileImageData: self.modelImageData)
+        delegate?.didAddContact(newContact)
+        
+        // 이전 화면으로 이동
+        navigationController?.popViewController(animated: true)
     }
     
-// MARK: - 랜덤 버튼 눌렸을 때
+    // MARK: - 랜덤 버튼 눌렸을 때
     @objc private func randomButtonTapped() {
         pokemonInfoData()
     }

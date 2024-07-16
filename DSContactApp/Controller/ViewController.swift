@@ -10,7 +10,7 @@ import SnapKit
 
 class ViewController: UIViewController {
     
-    private var dataSource = [User]()
+    private var dataSource: [User] = []
     private let mainView = MainView()
     
     override func viewDidLoad() {
@@ -18,7 +18,14 @@ class ViewController: UIViewController {
         mainViewconfigureUI()
     }
     
-// MARK: - 메인 뷰 관련
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadUserDefaultsData()
+        mainView.mainTableView.reloadData()
+        
+    }
+    
+    // MARK: - 메인 뷰 관련
     private func mainViewconfigureUI() {
         view.addSubview(mainView)
         // mainView의 레이아웃 설정
@@ -29,20 +36,35 @@ class ViewController: UIViewController {
         mainView.mainTableView.dataSource = self
         mainView.mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
         
-        dataSource = [
-            User(name: "name", phoneNumber: "010-0000-0000"),
-            User(name: "name", phoneNumber: "010-0000-0000"),
-            User(name: "name", phoneNumber: "010-0000-0000"),
-            User(name: "name", phoneNumber: "010-0000-0000"),
-            User(name: "name", phoneNumber: "010-0000-0000"),
-            User(name: "name", phoneNumber: "010-0000-0000"),
-            User(name: "name", phoneNumber: "010-0000-0000"),
-        ]
+        //        dataSource = [
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //            User(name: "name", phoneNumber: "010-0000-0000"),
+        //        ]
         
         configureNavigationBar()
     }
     
-// MARK: - 네비게이션 관련
+    // MARK: - UserDefaults에서 데이터 로드
+    private func loadUserDefaultsData() {
+        if let savedData = UserDefaults.standard.data(forKey: "contacts"),
+               let savedContacts = try? JSONDecoder().decode([User].self, from: savedData) {
+                dataSource = savedContacts
+            }
+    }
+    
+    // MARK: - UserDefaults에 데이터 저장
+    private func saveUserDefaultsData() {
+        if let savedData = try? JSONEncoder().encode(dataSource) {
+            UserDefaults.standard.set(savedData, forKey: "contacts")
+        }
+    }
+
+    // MARK: - 네비게이션 관련
     private func configureNavigationBar() {
         // 네비게이션 타이틀 설정
         self.title = "친구 목록"
@@ -57,11 +79,12 @@ class ViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = additionButton
     }
     
-// MARK: - 버튼 눌렸을 때
+    // MARK: - 버튼 눌렸을 때
     @objc
     private func buttonTapped() {
-        // 적용 버튼 클릭시 동작
-        self.navigationController?.pushViewController(AdditionController(), animated: true)
+        let additionController = AdditionController()
+        additionController.delegate = self
+        self.navigationController?.pushViewController(additionController, animated: true)
     }
 }
 
@@ -89,4 +112,11 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
+extension ViewController: AdditionControllerDelegate {
+    func didAddContact(_ contact: User) {
+        dataSource.append(contact)
+        saveUserDefaultsData()
+        mainView.mainTableView.reloadData()
+    }
+}
 
