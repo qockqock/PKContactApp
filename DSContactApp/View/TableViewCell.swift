@@ -54,7 +54,7 @@ class TableViewCell: UITableViewCell {
     }
     
     // MARK: - 테이블 셀 안 내용관련 레이아웃
-    private func configureUI(){
+    private func configureUI() {
         contentView.backgroundColor = .white
         [ nameLabel, numberLabel, profileImage].forEach{
             contentView.addSubview($0)

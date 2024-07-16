@@ -11,7 +11,7 @@ import SnapKit
 class AdditionView: UIView {
     
     // 이미지 관련
-    private let additionImageView: UIImageView = {
+    public let additionImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 100
@@ -22,7 +22,7 @@ class AdditionView: UIView {
         return imageView
     }()
 
-    private let randomButton: UIButton = {
+    public let randomButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .systemFont(ofSize: 15)
         button.setTitleColor(.gray, for: .normal)
