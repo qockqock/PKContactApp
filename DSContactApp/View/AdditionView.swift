@@ -32,7 +32,7 @@ class AdditionView: UIView {
     }()
     
     // 이름
-    private let nameTextView: UITextView = {
+    public let nameTextView: UITextView = {
         let textView = UITextView()
         textView.layer.borderWidth = 1.0
         textView.layer.borderColor = UIColor.gray.cgColor
@@ -43,7 +43,7 @@ class AdditionView: UIView {
     }()
     
     // 전화번호
-    private let phoneNumberTextView: UITextView = {
+    public let phoneNumberTextView: UITextView = {
         let textView = UITextView()
         textView.layer.borderWidth = 1.0
         textView.layer.borderColor = UIColor.gray.cgColor
@@ -52,6 +52,7 @@ class AdditionView: UIView {
         
         return textView
     }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         additionConfigureUI()

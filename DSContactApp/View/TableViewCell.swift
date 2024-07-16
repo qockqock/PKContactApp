@@ -84,5 +84,12 @@ class TableViewCell: UITableViewCell {
     public func configureCell(user: User) {
         nameLabel.text = "\(user.name)"
         numberLabel.text = "\(user.phoneNumber)"
+        
+        if let imageData = user.profileImageData {
+                profileImage.image = UIImage(data: imageData)
+            } else {
+                profileImage.image = UIImage(named: "frontDefault") // 기본 이미지 설정
+            }
+        
     }
 }

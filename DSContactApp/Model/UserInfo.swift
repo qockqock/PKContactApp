@@ -14,4 +14,5 @@ struct UserInfo: Codable {
 struct User: Codable {
     let name: String
     let phoneNumber: String
+    var profileImageData: Data?
 }
