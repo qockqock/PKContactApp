@@ -146,14 +146,14 @@ extension ViewController: AdditionControllerDelegate {
     func didAddContact(_ contact: User) {
         dataSource.append(contact)
         saveUserDefaultsData()
-        mainView.mainTableView.reloadData() // 추가
+        mainView.mainTableView.reloadData()
     }
     
     func didEditcontact(_ contact: User) {
-        if let index = dataSource.firstIndex(where: { $0.name == contact.name }) {
+        if let index = dataSource.firstIndex(where: { $0.id == contact.id }) {
             dataSource[index] = contact
             saveUserDefaultsData()
-            mainView.mainTableView.reloadData() // 추가
+            mainView.mainTableView.reloadData()
         }
     }
     
