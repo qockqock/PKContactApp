@@ -12,6 +12,7 @@ struct UserInfo: Codable {
 }
 
 struct User: Codable {
+    var id: UUID
     var name: String
     var phoneNumber: String
     var profileImageData: Data?

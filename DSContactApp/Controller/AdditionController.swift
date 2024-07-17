@@ -121,7 +121,7 @@ class AdditionController: UIViewController {
             delegate?.didEditcontact(user)
         }else {
             // 새 연락처 인스턴스 생성
-            let newContact = User(name: name, phoneNumber: phoneNumber, profileImageData: self.modelImageData)
+            let newContact = User(id: UUID(), name: name, phoneNumber: phoneNumber, profileImageData: self.modelImageData)
             delegate?.didAddContact(newContact)
         }
         // 이전 화면으로 이동
