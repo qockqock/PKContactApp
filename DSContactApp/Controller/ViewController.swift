@@ -41,16 +41,6 @@ class ViewController: UIViewController {
         mainView.mainTableView.dataSource = self
         mainView.mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
         
-        //        dataSource = [
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //            User(name: "name", phoneNumber: "010-0000-0000"),
-        //        ]
-        
         configureNavigationBar()
     }
     
@@ -66,6 +56,8 @@ class ViewController: UIViewController {
     private func saveUserDefaultsData() {
         if let savedData = try? JSONEncoder().encode(dataSource) {
             UserDefaults.standard.set(savedData, forKey: "contacts")
+            
+            loadUserDefaultsData()
         }
     }
 
@@ -99,6 +91,16 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         80
     }
+    
+    //셀 선택시 호출되는 메서드
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedUser = dataSource[indexPath.row]
+        let additionController = AdditionController()
+        additionController.user = selectedUser
+        additionController.delegate = self
+        
+        self.navigationController?.pushViewController(additionController, animated: true)
+    }
 }
 
 extension ViewController: UITableViewDataSource {
@@ -115,12 +117,45 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         dataSource.count
     }
+    
+    // 테이블 뷰 셀 스와이프 삭제
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { [weak self] (action, view, completionHandler) in
+            // self가 올바르게 캡처 되었는지 확인
+            guard let self = self else { return }
+            
+            // 데이터 소스에서 항목 삭제
+            self.saveUserDefaultsData()
+            
+            // 테이블 뷰에서 행 삭제
+            tableView.performBatchUpdates({
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+                self.dataSource.remove(at: indexPath.row)
+            }, completion: { finished in
+                completionHandler(true)
+            })
+        }
+        deleteAction.backgroundColor = .red
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
+    }
 }
 
 extension ViewController: AdditionControllerDelegate {
     func didAddContact(_ contact: User) {
         dataSource.append(contact)
         saveUserDefaultsData()
+        mainView.mainTableView.reloadData() // 추가
     }
+    
+    func didEditcontact(_ contact: User) {
+        if let index = dataSource.firstIndex(where: { $0.name == contact.name }) {
+            dataSource[index] = contact
+            saveUserDefaultsData()
+            mainView.mainTableView.reloadData() // 추가
+        }
+    }
+    
 }
 

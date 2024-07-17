@@ -10,6 +10,7 @@ import SnapKit
 
 protocol AdditionControllerDelegate: AnyObject {
     func didAddContact(_ contact: User)
+    func didEditcontact(_ contact: User)
 }
 
 class AdditionController: UIViewController {
@@ -17,6 +18,7 @@ class AdditionController: UIViewController {
     weak var delegate: AdditionControllerDelegate?
     private let additionView = AdditionView()
     
+    var user: User?
     // 이미지 데이터 관련
     private var modelImageData: Data?
     
@@ -35,6 +37,11 @@ class AdditionController: UIViewController {
         
         // 랜덤 버튼
         additionView.randomButton.addTarget(self, action: #selector(randomButtonTapped), for: .touchUpInside)
+        
+        // 사용자가 있는 경우 데이터 채우기
+        if let user = user {
+            populateData(user: user)
+        }
     }
     
     // MARK: - 서버 데이터 불러오는 메서드
@@ -94,7 +101,7 @@ class AdditionController: UIViewController {
     // MARK: - 네비게이션 바 관련
     private func configureNavigationBar() {
         // 네비게이션 타이틀 설정
-        self.title = "연락처 추가"
+        self.title = user?.name ?? "연락처 추가"
         
         // 우측 버튼 설정
         let additionButton = UIBarButtonItem(title: "적용", style: .plain, target: self, action: #selector(addtionButtonTapped))
@@ -107,10 +114,16 @@ class AdditionController: UIViewController {
         let name = additionView.nameTextView.text ?? ""
         let phoneNumber = additionView.phoneNumberTextView.text ?? ""
         
-        // 새 연락처 인스턴스 생성
-        let newContact = User(name: name, phoneNumber: phoneNumber, profileImageData: self.modelImageData)
-        delegate?.didAddContact(newContact)
-        
+        if var user = user {
+            user.name = name
+            user.phoneNumber = phoneNumber
+            user.profileImageData = self.modelImageData
+            delegate?.didEditcontact(user)
+        }else {
+            // 새 연락처 인스턴스 생성
+            let newContact = User(name: name, phoneNumber: phoneNumber, profileImageData: self.modelImageData)
+            delegate?.didAddContact(newContact)
+        }
         // 이전 화면으로 이동
         navigationController?.popViewController(animated: true)
     }
@@ -118,5 +131,15 @@ class AdditionController: UIViewController {
     // MARK: - 랜덤 버튼 눌렸을 때
     @objc private func randomButtonTapped() {
         pokemonInfoData()
+    }
+    
+    // MARK: - 기존 사용자 데이터 채우기
+    private func populateData(user: User) {
+        additionView.nameTextView.text = user.name
+        additionView.phoneNumberTextView.text = user.phoneNumber
+        if let imageData = user.profileImageData {
+            additionView.additionImageView.image = UIImage(data: imageData)
+            self.modelImageData = imageData
+        }
     }
 }
