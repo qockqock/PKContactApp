@@ -17,3 +17,4 @@ struct User: Codable {
     var phoneNumber: String
     var profileImageData: Data?
 }
+

@@ -35,7 +35,7 @@ class TableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 30
-        imageView.layer.borderWidth = 1
+        imageView.layer.borderWidth = 0.5
         imageView.layer.borderColor = UIColor.black.cgColor
         imageView.clipsToBounds = true
         
@@ -90,6 +90,5 @@ class TableViewCell: UITableViewCell {
             } else {
                 profileImage.image = UIImage(named: "frontDefault") // 기본 이미지 설정
             }
-        
     }
 }

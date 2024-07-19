@@ -18,6 +18,15 @@ class ViewController: UIViewController {
         }
     }
     
+    override func loadView() {
+        view = mainView
+    }
+//    view.addSubview(mainView)
+//    // mainView의 레이아웃 설정
+//    mainView.snp.makeConstraints {
+//        $0.edges.equalToSuperview()
+//    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         mainViewconfigureUI()
@@ -27,19 +36,22 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         loadUserDefaultsData()
         mainView.mainTableView.reloadData()
-        
     }
     
     // MARK: - 메인 뷰 관련
     private func mainViewconfigureUI() {
-        view.addSubview(mainView)
-        // mainView의 레이아웃 설정
-        mainView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
+        
         mainView.mainTableView.delegate = self
         mainView.mainTableView.dataSource = self
         mainView.mainTableView.register(TableViewCell.self, forCellReuseIdentifier: TableViewCell.id)
+        
+        // 테이블 뷰의 separatorInset을 설정
+        mainView.mainTableView.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
+        // 테이블 뷰의 맨 위에 빈 뷰 추가
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: mainView.mainTableView.frame.width, height: 1))
+        headerView.backgroundColor = .clear
+        mainView.mainTableView.tableHeaderView = headerView
         
         configureNavigationBar()
     }
@@ -124,13 +136,12 @@ extension ViewController: UITableViewDataSource {
             // self가 올바르게 캡처 되었는지 확인
             guard let self = self else { return }
             
-            // 데이터 소스에서 항목 삭제
-            self.saveUserDefaultsData()
-            
             // 테이블 뷰에서 행 삭제
             tableView.performBatchUpdates({
                 tableView.deleteRows(at: [indexPath], with: .automatic)
+                // 데이터 소스에서 항목 삭제
                 self.dataSource.remove(at: indexPath.row)
+                self.saveUserDefaultsData()
             }, completion: { finished in
                 completionHandler(true)
             })
