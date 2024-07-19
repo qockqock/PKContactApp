@@ -40,7 +40,7 @@ class MainView: UIView {
         // 테이블 뷰 잡아주기
         mainTableView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(150)
+            $0.top.equalTo(100)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }

@@ -16,7 +16,7 @@ class AdditionView: UIView {
         imageView.contentMode = .scaleAspectFit
         imageView.layer.cornerRadius = 100
         imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.black.cgColor
+        imageView.layer.borderColor = UIColor.systemGray4.cgColor
         imageView.clipsToBounds = true
         
         return imageView
@@ -34,10 +34,15 @@ class AdditionView: UIView {
     // 이름
     public let nameTextView: UITextView = {
         let textView = UITextView()
+//        textView.delegate = self
         textView.layer.borderWidth = 1.0
         textView.layer.borderColor = UIColor.gray.cgColor
         textView.font = .systemFont(ofSize: 20)
         textView.layer.cornerRadius = 10
+        
+        textView.textColor = .systemGray4 //placeholder 텍스트
+        textView.text = "이름을 입력하세요."
+        textView.tag = 1
         
         return textView
     }()
@@ -45,10 +50,15 @@ class AdditionView: UIView {
     // 전화번호
     public let phoneNumberTextView: UITextView = {
         let textView = UITextView()
+//        textView.delegate = self
         textView.layer.borderWidth = 1.0
         textView.layer.borderColor = UIColor.gray.cgColor
         textView.font = .systemFont(ofSize: 20)
         textView.layer.cornerRadius = 10
+        
+        textView.textColor = .systemGray4 //placeholder 텍스트
+        textView.text = "전화번호를 입력하세요."
+        textView.tag = 2
         
         return textView
     }()
@@ -56,6 +66,8 @@ class AdditionView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         additionConfigureUI()
+        nameTextView.delegate = self
+        phoneNumberTextView.delegate = self
         
     }
     
@@ -103,8 +115,25 @@ class AdditionView: UIView {
         }
     }
 }
-//
-//#Preview{
-//    let vc = AdditionController()
-//    return vc
-//}
+
+extension AdditionView: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        guard textView.textColor == .systemGray4 else { return }
+        
+        textView.text = nil
+        textView.textColor = .darkGray
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            if textView.tag == 1 {
+                textView.text = "이름을 입력하세요."
+                textView.textColor = .systemGray4
+            } else if textView.tag == 2 {
+                textView.text = "전화번호를 입력하세요."
+                textView.textColor = .systemGray4
+            }
+        }
+    }
+}
+

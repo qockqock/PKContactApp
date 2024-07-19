@@ -114,6 +114,18 @@ class AdditionController: UIViewController {
         let name = additionView.nameTextView.text ?? ""
         let phoneNumber = additionView.phoneNumberTextView.text ?? ""
         
+        // 전화번호 유효성 검사
+        if !validataPhoneNumber(phoneNumber) {
+            showAlert(message: "전화번호 양식에 맞춰 입력해주세요 \n 010-xxxx-xxx")
+            return
+        }
+        // 이름이 비어있을 경우 등록x
+        if name == "이름을 입력하세요." || name == "" {
+            showAlert(message: "이름을 입력하세요")
+            return
+        }
+        
+        
         if var user = user {
             user.name = name
             user.phoneNumber = phoneNumber
@@ -141,5 +153,26 @@ class AdditionController: UIViewController {
             additionView.additionImageView.image = UIImage(data: imageData)
             self.modelImageData = imageData
         }
+    }
+    
+    // MARK: - 정규식 선언 (이를 이용해 phoneNumber 예외처리)
+    private func validataPhoneNumber(_ phoneNumber: String) -> Bool {
+        // 정규 표현식 패턴 정의
+        let pattern = "^010-\\d{4}-\\d{4}$"
+        // NSRegularExpression 인스턴스 생성
+        let regex = try! NSRegularExpression(pattern: pattern)
+        // 검사할 문자열의 범위 지정
+        let range = NSRange(location: 0, length: phoneNumber.utf16.count)
+        // 문자열에서 패턴과 일치하는 부분 찾기
+        let match = regex.firstMatch(in: phoneNumber, options: [], range: range)
+        // 일치하는 부분이 있으면 true, 없으면 false 반환
+        return match != nil
+        
+    }
+    // MARK: - 경고창 띄우기
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "ERROR", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
 }
